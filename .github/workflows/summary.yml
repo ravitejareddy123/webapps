@@ -1,0 +1,55 @@
+name: Summarize new issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      models: read
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Start ollama container
+        run: |
+          docker run -d  -p 11434:11434 --name ollama ollama/ollama
+          sleep 20
+      - name: run code review on app.py
+        run: |
+          promt="Review this python code for security and best practices:\n$(cat app.py)"
+          echo "Prompt:$prompt"
+          curl -s -X POST http://localhost:11434/api/generate \
+             -H "Content-Type: application/json" \
+             -d '{
+               "model": "mistral",
+               "prompt": "'"$prompt"'"
+             }' > review.txt
+          echo "=== Code Review Output ==="
+          cat review.txt
+      - name: Upload Review Output
+        uses: actions/upload-artifact@v3
+        with:
+          name: ollama-review
+          path: review.txt
+
+      - name: Run AI inference
+        id: inference
+        uses: actions/ai-inference@v1
+        with:
+          prompt: |
+            Summarize the following GitHub issue in one paragraph:
+            Title: ${{ github.event.issue.title }}
+            Body: ${{ github.event.issue.body }}
+
+      - name: Comment with AI summary
+        run: |
+          gh issue comment $ISSUE_NUMBER --body '${{ steps.inference.outputs.response }}'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RESPONSE: ${{ steps.inference.outputs.response }}
