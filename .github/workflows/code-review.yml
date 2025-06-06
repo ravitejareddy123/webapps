@@ -40,11 +40,17 @@ jobs:
 
       - name: Run code review with Ollama
         run: |
-          prompt=$(cat prompt.txt | jq -Rs .)
-          echo "{\"model\": \"mistral\", \"prompt\": $prompt}" > payload.json
+          # Safely read prompt and encode it as JSON
+          encoded_prompt=$(jq -Rs . < prompt.txt)
+
+          # Write JSON payload to a file
+          echo "{\"model\": \"mistral\", \"prompt\": $encoded_prompt}" > payload.json
+
+          # Send request to Ollama
           curl -s -X POST http://localhost:11434/api/generate \
             -H "Content-Type: application/json" \
             -d @payload.json > review.txt
+
           echo "=== Code Review Output ==="
           cat review.txt
 
