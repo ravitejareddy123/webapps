@@ -1,16 +1,13 @@
 name: Summarize new issues
 
 on:
-  issues:
-    types: [opened]
+  push:
+    branches:
+      - main
 
 jobs:
-  summary:
+  ollama-review:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      models: read
-      contents: read
 
     steps:
       - name: Checkout repository
