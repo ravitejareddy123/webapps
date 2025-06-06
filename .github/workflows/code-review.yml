@@ -25,21 +25,18 @@ jobs:
           echo "Please review the following code files:" >> prompt.txt
           echo "" >> prompt.txt
 
-          # Find and append contents of .py, .txt, and Dockerfile files
           for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \)); do
             echo "===== File: $file =====" >> prompt.txt
             cat "$file" >> prompt.txt
             echo -e "\n\n" >> prompt.txt
           done
 
-          cat <<'EOF' >> prompt.txt
-Perform the following tasks:
-1. Identify any bugs or potential issues.
-2. Detect any security vulnerabilities or bad practices.
-3. Suggest improvements for performance, readability, or maintainability.
-4. Suggest unit test cases that should be written for this code, including edge cases.
-5. Finally, state whether this code is ready to be committed to Git or if changes are required.
-EOF
+          echo "Perform the following tasks:" >> prompt.txt
+          echo "1. Identify any bugs or potential issues." >> prompt.txt
+          echo "2. Detect any security vulnerabilities or bad practices." >> prompt.txt
+          echo "3. Suggest improvements for performance, readability, or maintainability." >> prompt.txt
+          echo "4. Suggest unit test cases that should be written for this code, including edge cases." >> prompt.txt
+          echo "5. Finally, state whether this code is ready to be committed to Git or if changes are required." >> prompt.txt
 
       - name: Run code review with Ollama
         run: |
