@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Start ollama container
         run: |
           docker run -d  -p 11434:11434 --name ollama ollama/ollama
