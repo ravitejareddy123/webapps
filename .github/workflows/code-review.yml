@@ -41,6 +41,7 @@ jobs:
 
       - name: Run code review with Ollama
         run: |
+          cat prompt.txt
           # Safely read prompt and encode it as JSON
           encoded_prompt=$(jq -Rs . < prompt.txt)
 
