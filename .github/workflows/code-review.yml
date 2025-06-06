@@ -25,7 +25,8 @@ jobs:
           echo "Please review the following code files:" >> prompt.txt
           echo "" >> prompt.txt
 
-          for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \)); do
+          # Exclude prompt.txt from being included in the review
+          for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \) ! -name "prompt.txt"); do
             echo "===== File: $file =====" >> prompt.txt
             cat "$file" >> prompt.txt
             echo -e "\n\n" >> prompt.txt
