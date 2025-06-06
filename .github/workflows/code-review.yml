@@ -12,6 +12,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Ollama Code Review
+        uses: ./.github/actions/ollama-code-review
+        with:
+          llm-model: 'codegemma'
+        env:
+          GITHUBTOKEN: ${{ secrets.GITHUBTOKEN }}
 
       - name: Start Ollama container
         run: |
