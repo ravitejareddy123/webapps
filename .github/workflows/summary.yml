@@ -16,6 +16,7 @@ jobs:
         run: |
           docker run -d  -p 11434:11434 --name ollama ollama/ollama
           sleep 20
+          ls -la
       - name: run code review on app.py
         run: |
           promt="Review this python code for security and best practices:\n$(cat app.py)"
