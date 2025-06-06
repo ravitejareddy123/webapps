@@ -23,28 +23,23 @@ jobs:
           curl -s http://localhost:11434/api/pull -d '{"name": "codellama:7b-instruct"}'
           sleep 20
 
-      - name: Prepare review prompt for multiple files
+      - name: Prepare review prompt with code regeneration
         run: |
-          echo "You are expert in code reviewing." > prompt.txt
+          echo "You are an expert code reviewer and software engineer." > prompt.txt
           echo "" >> prompt.txt
-          echo "Please review the following code files:" >> prompt.txt
+          echo "Please review and improve the following code files. For each file:" >> prompt.txt
+          echo "- Identify bugs, security issues, and bad practices." >> prompt.txt
+          echo "- Suggest improvements for readability, performance, and maintainability." >> prompt.txt
+          echo "- Then, regenerate the improved version of the code." >> prompt.txt
           echo "" >> prompt.txt
 
-          # Exclude prompt.txt from being included in the review
           for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \) ! -name "prompt.txt"); do
             echo "===== File: $file =====" >> prompt.txt
             cat "$file" >> prompt.txt
             echo -e "\n\n" >> prompt.txt
           done
 
-          echo "Perform the following tasks:" >> prompt.txt
-          echo "1. Identify any bugs or potential issues." >> prompt.txt
-          echo "2. Detect any security vulnerabilities or bad practices." >> prompt.txt
-          echo "3. Suggest improvements for performance, readability, or maintainability." >> prompt.txt
-          echo "4. Suggest unit test cases that should be written for this code, including edge cases." >> prompt.txt
-          echo "5. Finally, state whether this code is ready to be committed to Git or if changes are required." >> prompt.txt
-
-      - name: Run code review with Ollama
+      - name: Run code review and regeneration with Ollama
         run: |
           encoded_prompt=$(jq -Rs . < prompt.txt)
           echo "{\"model\": \"codellama:7b-instruct\", \"prompt\": $encoded_prompt, \"stream\": false}" > payload.json
@@ -57,7 +52,6 @@ jobs:
 
           echo "=== Code Review Output ==="
           cat review.txt
-
 
       - name: Upload Review Output
         uses: actions/upload-artifact@v4
