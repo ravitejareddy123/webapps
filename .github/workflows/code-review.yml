@@ -24,6 +24,8 @@ jobs:
           echo "" >> prompt.txt
           echo "Please review the following code files:" >> prompt.txt
           echo "" >> prompt.txt
+
+          # Find and append contents of .py, .txt, and Dockerfile files
           for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \)); do
             echo "===== File: $file =====" >> prompt.txt
             cat "$file" >> prompt.txt
@@ -38,14 +40,18 @@ Perform the following tasks:
 4. Suggest unit test cases that should be written for this code, including edge cases.
 5. Finally, state whether this code is ready to be committed to Git or if changes are required.
 EOF
+
       - name: Run code review with Ollama
         run: |
+          prompt=$(cat prompt.txt)
           curl -s -X POST http://localhost:11434/api/generate \
             -H "Content-Type: application/json" \
-            -d '{
-              "model": "mistral",
-              "prompt": "'"$(cat prompt.txt)"'"
-            }' > review.txt
+            -d @- > review.txt <<EOF
+{
+  "model": "mistral",
+  "prompt": "$prompt"
+}
+EOF
           echo "=== Code Review Output ==="
           cat review.txt
 
