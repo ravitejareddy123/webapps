@@ -1,0 +1,56 @@
+name: Multi-File Code Review with Ollama
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ollama-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Start Ollama container
+        run: |
+          docker run -d -p 11434:11434 --name ollama ollama/ollama
+          sleep 20
+
+      - name: Prepare review prompt for multiple files
+        run: |
+          echo "You are expert in code reviewing." > prompt.txt
+          echo "" >> prompt.txt
+          echo "Please review the following code files:" >> prompt.txt
+          echo "" >> prompt.txt
+          for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \)); do
+            echo "===== File: $file =====" >> prompt.txt
+            cat "$file" >> prompt.txt
+            echo -e "\n\n" >> prompt.txt
+          done
+
+          cat <<EOF >> prompt.txt
+Perform the following tasks:
+1. Identify any bugs or potential issues.
+2. Detect any security vulnerabilities or bad practices.
+3. Suggest improvements for performance, readability, or maintainability.
+4. Suggest unit test cases that should be written for this code, including edge cases.
+5. Finally, state whether this code is ready to be committed to Git or if changes are required.
+EOF
+      - name: Run code review with Ollama
+        run: |
+          curl -s -X POST http://localhost:11434/api/generate \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "mistral",
+              "prompt": "'"$(cat prompt.txt)"'"
+            }' > review.txt
+          echo "=== Code Review Output ==="
+          cat review.txt
+
+      - name: Upload Review Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: ollama-review
+          path: review.txt
