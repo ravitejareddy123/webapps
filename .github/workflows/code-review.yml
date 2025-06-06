@@ -32,7 +32,7 @@ jobs:
             echo -e "\n\n" >> prompt.txt
           done
 
-          cat <<EOF >> prompt.txt
+          cat <<'EOF' >> prompt.txt
 Perform the following tasks:
 1. Identify any bugs or potential issues.
 2. Detect any security vulnerabilities or bad practices.
