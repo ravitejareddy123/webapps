@@ -16,13 +16,12 @@ jobs:
       - name: Start Ollama container
         run: |
           docker run -d -p 11434:11434 --name ollama ollama/ollama
-          sleep 25
+          sleep 20
 
       - name: Pull model via Ollama API
         run: |
           curl -s http://localhost:11434/api/pull -d '{"name": "codellama:7b-instruct"}'
-          sleep 25
-
+          sleep 20
 
       - name: Prepare review prompt for multiple files
         run: |
@@ -47,14 +46,9 @@ jobs:
 
       - name: Run code review with Ollama
         run: |
-          cat prompt.txt
-          # Safely read prompt and encode it as JSON
           encoded_prompt=$(jq -Rs . < prompt.txt)
+          echo "{\"model\": \"codellama:7b-instruct\", \"prompt\": $encoded_prompt}" > payload.json
 
-          # Write JSON payload to a file
-          echo "{\"model\": \"mistral\", \"prompt\": $encoded_prompt}" > payload.json
-
-          # Send request to Ollama
           curl -s -X POST http://localhost:11434/api/generate \
             -H "Content-Type: application/json" \
             -d @payload.json > review.txt
