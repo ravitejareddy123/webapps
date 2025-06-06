@@ -47,14 +47,17 @@ jobs:
       - name: Run code review with Ollama
         run: |
           encoded_prompt=$(jq -Rs . < prompt.txt)
-          echo "{\"model\": \"codellama:7b-instruct\", \"prompt\": $encoded_prompt}" > payload.json
+          echo "{\"model\": \"codellama:7b-instruct\", \"prompt\": $encoded_prompt, \"stream\": false}" > payload.json
 
           curl -s -X POST http://localhost:11434/api/generate \
             -H "Content-Type: application/json" \
-            -d @payload.json > review.txt
+            -d @payload.json > response.json
+
+          jq -r '.response' response.json > review.txt
 
           echo "=== Code Review Output ==="
           cat review.txt
+
 
       - name: Upload Review Output
         uses: actions/upload-artifact@v4
