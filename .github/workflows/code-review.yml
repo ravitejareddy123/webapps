@@ -31,6 +31,8 @@ jobs:
           echo "- Identify bugs, security issues, and bad practices." >> prompt.txt
           echo "- Suggest improvements for readability, performance, and maintainability." >> prompt.txt
           echo "- Then, regenerate the improved version of the code." >> prompt.txt
+          echo "- Suggest unit test cases that should be written for this code, including edge cases." >> prompt.txt
+          echo "- Finally, state whether this code is ready to be committed to Git or if changes are required." >> prompt.txt
           echo "" >> prompt.txt
 
           for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \) ! -name "prompt.txt"); do
