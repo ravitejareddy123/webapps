@@ -16,12 +16,12 @@ jobs:
       - name: Start Ollama container
         run: |
           docker run -d -p 11434:11434 --name ollama ollama/ollama
-          sleep 20
+          sleep 50
 
       - name: Pull model via Ollama API
         run: |
           curl -s http://localhost:11434/api/pull -d '{"name": "codellama:7b-instruct"}'
-          sleep 20
+          sleep 50
 
       - name: Prepare review prompt with code regeneration
         run: |
