@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  chatbot:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./chat_history.json:/app/chat_history.json
+      - ./models:/app/models
+    environment:
+      - GPT4ALL_BACKEND=cpu
