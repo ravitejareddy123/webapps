@@ -37,9 +37,12 @@ jobs:
 
           for file in $(find . -type f \( -name "*.py" -o -name "*.txt" -o -name "Dockerfile" \) ! -name "prompt.txt"); do
             echo "===== File: $file =====" >> prompt.txt
+            echo '```' >> prompt.txt
             cat "$file" >> prompt.txt
+            echo '```' >> prompt.txt
             echo -e "\n\n" >> prompt.txt
           done
+
 
       - name: Run code review and regeneration with Ollama
         run: |
