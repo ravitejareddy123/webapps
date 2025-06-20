@@ -20,7 +20,7 @@ jobs:
 
       - name: Pull model via Ollama API
         run: |
-          curl -s http://localhost:11434/api/pull -d '{"name": "codellama:7b-instruct"}'
+          curl -s http://localhost:11434/api/pull -d '{"name": "MaziyarPanahi/openchat-3.5-0106-Mistral-7B-Instruct-v0.2-GGUF"}'
           sleep 50
 
       - name: Prepare review prompt with code regeneration
@@ -47,7 +47,7 @@ jobs:
       - name: Run code review and regeneration with Ollama
         run: |
           encoded_prompt=$(jq -Rs . < prompt.txt)
-          echo "{\"model\": \"codellama:7b-instruct\", \"prompt\": $encoded_prompt, \"stream\": false, \"options\": {\"num_ctx\": 8192}}" > payload.json
+          echo "{\"model\": \"MaziyarPanahi/openchat-3.5-0106-Mistral-7B-Instruct-v0.2-GGUF\", \"prompt\": $encoded_prompt, \"stream\": false, \"options\": {\"num_ctx\": 8192}}" > payload.json
           curl -s -X POST http://localhost:11434/api/generate \
             -H "Content-Type: application/json" \
             -d @payload.json > response.json
