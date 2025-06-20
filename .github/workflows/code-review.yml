@@ -22,6 +22,17 @@ jobs:
         run: |
           curl -s http://localhost:11434/api/pull -d '{"name": "MaziyarPanahi/openchat-3.5-0106-Mistral-7B-Instruct-v0.2-GGUF"}'
           sleep 50
+      - name: Wait for Ollama API to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:11434/api/tags > /dev/null; then
+              echo "Ollama is ready."
+              break
+            fi
+            echo "Waiting for Ollama..."
+            sleep 5
+          done
+
 
       - name: Prepare review prompt with code regeneration
         run: |
